@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:"#000000",secondary:'#27272A'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="mb-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <div class="hourglass-logo w-8 h-8 md:w-10 md:h-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-full h-full">
+                        <!-- Hourglass shape -->
+                        <path d="M20 15 L80 15 L80 25 L60 45 L60 55 L80 75 L80 85 L20 85 L20 75 L40 55 L40 45 L20 25 Z" fill="white" stroke="none"/>
+                        <!-- Sand in top -->
+                        <path d="M25 20 L75 20 L75 30 L55 40 L45 40 L25 30 Z" fill="black"/>
+                        <!-- Sand in bottom -->
+                        <path d="M25 70 L75 70 L75 80 L25 80 Z" fill="black"/>
+                        <!-- Falling sand -->
+                        <path d="M48 45 L52 45 L52 55 L48 55 Z" fill="black"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-white" style="font-family: 'Times New Roman', serif;">timby</h1>
+            </div>
+        </header>
+        
+        <main class="flex flex-col gap-8">
+            <!-- Timer Card (Non-collapsible) -->
+            <div class="bg-[#18181B] p-6 rounded-lg shadow-lg">
+                <!-- Session Type Selector -->
+                <div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="custom-select w-full sm:w-48">
+                        <div id="session-type-selected" class="custom-select-selected flex items-center justify-between bg-[#27272A] text-white px-4 py-2 rounded-button">
+                            <span id="current-session-type">Work Session</span>
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-down-s-line"></i>
+                            </div>
+                        </div>
+                        <div id="session-type-items" class="custom-select-items bg-[#27272A] rounded-lg mt-1 overflow-hidden">
+                            <div class="px-4 py-2 hover:bg-[#3F3F46]" data-value="work">Work Session</div>
+                            <div class="px-4 py-2 hover:bg-[#3F3F46]" data-value="short-break">Short Break</div>
+                            <div class="px-4 py-2 hover:bg-[#3F3F46]" data-value="long-break">Long Break</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-400">Auto Start Breaks</span>
+                        <label class="switch">
+                            <input type="checkbox" id="auto-start-breaks">
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                </div>
+                
+
+                
+                <!-- Timer Display -->
+                <div class="relative flex flex-col items-center justify-center mb-8">
+                    <div class="relative">
+                        <svg class="w-48 h-48 sm:w-64 sm:h-64">
+                            <circle cx="96" cy="96" r="88" fill="none" stroke="#27272A" stroke-width="6" class="sm:hidden"></circle>
+                            <circle id="progress-ring-small" class="progress-ring sm:hidden" cx="96" cy="96" r="88" fill="none" stroke="#000000" stroke-width="6" stroke-dasharray="553" stroke-dashoffset="553"></circle>
+                            <circle cx="128" cy="128" r="120" fill="none" stroke="#27272A" stroke-width="8" class="hidden sm:block"></circle>
+                            <circle id="progress-ring" class="progress-ring hidden sm:block" cx="128" cy="128" r="120" fill="none" stroke="#000000" stroke-width="8" stroke-dasharray="754" stroke-dashoffset="754"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <h2 id="timer-display" class="timer-display font-bold text-white">0:25</h2>
+                                <p id="session-status" class="mt-2 text-gray-400">Ready to start</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Control Buttons -->
+                <div class="flex justify-center gap-2 sm:gap-4 mb-8 flex-wrap">
+                    <button id="start-pause-btn" class="flex items-center gap-2 bg-[#27272A] hover:bg-[#3F3F46] text-white px-4 sm:px-6 py-3 rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-play-fill"></i>
+                        </div>
+                        <span class="hidden sm:inline">Start</span>
+                    </button>
+                    <button id="reset-btn" class="flex items-center gap-2 bg-[#27272A] hover:bg-[#3F3F46] text-white px-4 sm:px-6 py-3 rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-refresh-line"></i>
+                        </div>
+                        <span class="hidden sm:inline">Reset</span>
+                    </button>
+                    <button id="skip-btn" class="flex items-center gap-2 bg-[#27272A] hover:bg-[#3F3F46] text-white px-4 sm:px-6 py-3 rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-skip-forward-line"></i>
+                        </div>
+                        <span class="hidden sm:inline">Skip</span>
+                    </button>
+                    <button id="fullscreen-btn" class="flex items-center gap-2 bg-[#27272A] hover:bg-[#3F3F46] text-white px-4 sm:px-6 py-3 rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-fullscreen-line"></i>
+                        </div>
+                        <span class="hidden sm:inline">Fullscreen</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile: Todo List directly below timer -->
+            <div class="block lg:hidden">
+                <!-- Todo List (Mobile) -->
+                <div class="bg-[#18181B] p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Todo List</h2>
+                        <button id="toggle-todo-mobile" class="w-8 h-8 flex items-center justify-center bg-[#27272A] rounded-full text-white hover:bg-[#3F3F46] transition-colors !rounded-button">
+                            <i class="ri-arrow-down-s-line transform transition-transform duration-300"></i>
+                        </button>
+                    </div>
+                    <div id="todo-content-mobile" class="space-y-4 transition-all duration-300">
+                        <form id="todo-form-mobile" class="flex gap-2">
+                            <input type="text" id="todo-input-mobile" placeholder="Add a new task..." class="flex-1 px-4 py-2 rounded-button bg-[#27272A] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#000000]">
+                            <button type="submit" class="px-4 py-2 bg-[#000000] text-white rounded-button hover:bg-[#3F3F46] transition-colors">
+                                <i class="ri-add-line"></i>
+                            </button>
+                        </form>
+                        <div id="todo-list-mobile" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile: Statistics and History (Collapsed by default) -->
+            <div class="block lg:hidden space-y-4">
+                <!-- Statistics Panel (Mobile) -->
+                <div class="bg-[#18181B] p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Statistics</h2>
+                        <button id="toggle-stats-mobile" class="w-8 h-8 flex items-center justify-center bg-[#27272A] rounded-full text-white hover:bg-[#3F3F46] transition-colors !rounded-button">
+                            <i class="ri-arrow-down-s-line transform transition-transform duration-300" style="transform: rotate(-180deg);"></i>
+                        </button>
+                    </div>
+                    <div id="stats-content-mobile" class="grid grid-cols-1 gap-4 transition-all duration-300 collapsed">
+                        <div class="bg-[#27272A] p-4 rounded-lg">
+                            <h3 class="text-sm text-gray-400 mb-1">Total Sessions</h3>
+                            <p id="total-sessions-mobile" class="text-2xl font-bold">0</p>
+                        </div>
+                        <div class="bg-[#27272A] p-4 rounded-lg">
+                            <h3 class="text-sm text-gray-400 mb-1">Total Focus Time</h3>
+                            <p id="total-focus-time-mobile" class="text-2xl font-bold">0h 0m</p>
+                        </div>
+                        <div class="bg-[#27272A] p-4 rounded-lg">
+                            <h3 class="text-sm text-gray-400 mb-1">Today's Sessions</h3>
+                            <p id="today-sessions-mobile" class="text-2xl font-bold">0</p>
+                        </div>
+                        <div class="bg-[#27272A] p-4 rounded-lg">
+                            <h3 class="text-sm text-gray-400 mb-1">Today's Focus Time</h3>
+                            <p id="today-focus-time-mobile" class="text-2xl font-bold">0h 0m</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Session History (Mobile) -->
+                <div class="bg-[#18181B] p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Session History</h2>
+                        <div class="flex gap-2">
+                            <button id="toggle-history-mobile" class="flex items-center gap-1 bg-[#27272A] hover:bg-[#3F3F46] text-white px-3 py-1 text-sm rounded-button whitespace-nowrap">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-arrow-down-s-line transform transition-transform duration-300" style="transform: rotate(-180deg);"></i>
+                                </div>
+                            </button>
+                            <button id="export-history-mobile" class="flex items-center gap-1 bg-[#27272A] hover:bg-[#3F3F46] text-white px-3 py-1 text-sm rounded-button whitespace-nowrap">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-download-line"></i>
+                                </div>
+                            </button>
+                            <button id="clear-history-mobile" class="flex items-center gap-1 bg-[#27272A] hover:bg-[#3F3F46] text-white px-3 py-1 text-sm rounded-button whitespace-nowrap">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-delete-bin-line"></i>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="history-content-mobile" class="transition-all duration-300 collapsed">
+                        <div id="history-list-mobile" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                            <div class="text-center text-gray-500 py-8">
+                                No sessions recorded yet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Layout: Statistics and History on left, Todo on right -->
+            <div class="hidden lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
+                <!-- Left Side: Statistics and History -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Statistics Panel (Collapsible) -->
+                    <div class="bg-[#18181B] p-6 rounded-lg shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold">Statistics</h2>
+                            <button id="toggle-stats" class="w-8 h-8 flex items-center justify-center bg-[#27272A] rounded-full text-white hover:bg-[#3F3F46] transition-colors !rounded-button">
+                                <i class="ri-arrow-down-s-line transform transition-transform duration-300" style="transform: rotate(-180deg);"></i>
+                            </button>
+                        </div>
+                        <div id="stats-content" class="grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-300 collapsed">
+                            <div class="bg-[#27272A] p-4 rounded-lg">
+                                <h3 class="text-sm text-gray-400 mb-1">Total Sessions</h3>
+                                <p id="total-sessions" class="text-2xl font-bold">0</p>
+                            </div>
+                            <div class="bg-[#27272A] p-4 rounded-lg">
+                                <h3 class="text-sm text-gray-400 mb-1">Total Focus Time</h3>
+                                <p id="total-focus-time" class="text-2xl font-bold">0h 0m</p>
+                            </div>
+                            <div class="bg-[#27272A] p-4 rounded-lg">
+                                <h3 class="text-sm text-gray-400 mb-1">Today's Sessions</h3>
+                                <p id="today-sessions" class="text-2xl font-bold">0</p>
+                            </div>
+                            <div class="bg-[#27272A] p-4 rounded-lg">
+                                <h3 class="text-sm text-gray-400 mb-1">Today's Focus Time</h3>
+                                <p id="today-focus-time" class="text-2xl font-bold">0h 0m</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Session History (Collapsible) -->
+                    <div class="bg-[#18181B] p-6 rounded-lg shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold">Session History</h2>
+                            <div class="flex gap-2">
+                                <button id="toggle-history" class="flex items-center gap-1 bg-[#27272A] hover:bg-[#3F3F46] text-white px-3 py-1 text-sm rounded-button whitespace-nowrap">
+                                    <div class="w-4 h-4 flex items-center justify-center">
+                                        <i class="ri-arrow-down-s-line transform transition-transform duration-300" style="transform: rotate(-180deg);"></i>
+                                    </div>
+                                </button>
+                                <button id="export-history" class="flex items-center gap-1 bg-[#27272A] hover:bg-[#3F3F46] text-white px-3 py-1 text-sm rounded-button whitespace-nowrap">
+                                    <div class="w-4 h-4 flex items-center justify-center">
+                                        <i class="ri-download-line"></i>
+                                    </div>
+                                    <span>Export</span>
+                                </button>
+                                <button id="clear-history" class="flex items-center gap-1 bg-[#27272A] hover:bg-[#3F3F46] text-white px-3 py-1 text-sm rounded-button whitespace-nowrap">
+                                    <div class="w-4 h-4 flex items-center justify-center">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </div>
+                                    <span>Clear</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="history-content" class="transition-all duration-300 collapsed">
+                            <div id="history-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                                <div class="text-center text-gray-500 py-8">
+                                    No sessions recorded yet
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Side: Todo List (Collapsible) -->
+                <div class="lg:col-span-1">
+                    <div class="bg-[#18181B] p-6 rounded-lg shadow-lg h-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold">Todo List</h2>
+                            <button id="toggle-todo" class="flex items-center gap-1 bg-[#27272A] hover:bg-[#3F3F46] text-white px-3 py-1 text-sm rounded-button whitespace-nowrap">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-arrow-down-s-line transform transition-transform duration-300"></i>
+                                </div>
+                            </button>
+                        </div>
+                        <div id="todo-content" class="transition-all duration-300">
+                            <form id="todo-form" class="mb-4 flex gap-2">
+                                <input type="text" id="todo-input" placeholder="Add a new task..." class="flex-1 bg-[#27272A] text-white px-4 py-2 rounded-button text-sm border-none focus:ring-2 focus:ring-primary focus:outline-none" maxlength="100">
+                                <button type="submit" class="bg-[#27272A] hover:bg-[#3F3F46] text-white px-4 py-2 rounded-button whitespace-nowrap">Add</button>
+                            </form>
+                            <div id="todo-list" class="space-y-2 max-h-[600px] overflow-y-auto">
+                                <div id="empty-todo" class="text-center text-gray-500 py-8">
+                                    No tasks added yet
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timer Duration Settings (Bottom Section) -->
+            <div class="bg-[#18181B] p-6 rounded-lg shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Timer Settings</h2>
+                    <button id="toggle-settings" class="w-8 h-8 flex items-center justify-center bg-[#27272A] rounded-full text-white hover:bg-[#3F3F46] transition-colors !rounded-button">
+                        <i class="ri-arrow-down-s-line transform transition-transform duration-300" style="transform: rotate(-180deg);"></i>
+                    </button>
+                </div>
+                <div id="settings-content" class="grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300 collapsed">
+                    <div class="bg-[#27272A] p-4 rounded-lg">
+                        <h3 class="text-sm text-gray-400 mb-2">Work</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Hours</span>
+                                <div class="flex items-center gap-2">
+                                    <button id="work-hours-decrease" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-subtract-line text-xs"></i>
+                                    </button>
+                                    <span id="work-hours" class="text-lg font-bold w-6 text-center">0</span>
+                                    <button id="work-hours-increase" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-add-line text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Minutes</span>
+                                <div class="flex items-center gap-2">
+                                    <button id="work-minutes-decrease" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-subtract-line text-xs"></i>
+                                    </button>
+                                    <span id="work-minutes" class="text-lg font-bold w-6 text-center">25</span>
+                                    <button id="work-minutes-increase" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-add-line text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#27272A] p-4 rounded-lg">
+                        <h3 class="text-sm text-gray-400 mb-2">Short Break</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Hours</span>
+                                <div class="flex items-center gap-2">
+                                    <button id="short-break-hours-decrease" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-subtract-line text-xs"></i>
+                                    </button>
+                                    <span id="short-break-hours" class="text-lg font-bold w-6 text-center">0</span>
+                                    <button id="short-break-hours-increase" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-add-line text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Minutes</span>
+                                <div class="flex items-center gap-2">
+                                    <button id="short-break-minutes-decrease" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-subtract-line text-xs"></i>
+                                    </button>
+                                    <span id="short-break-minutes" class="text-lg font-bold w-6 text-center">5</span>
+                                    <button id="short-break-minutes-increase" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-add-line text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#27272A] p-4 rounded-lg">
+                        <h3 class="text-sm text-gray-400 mb-2">Long Break</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Hours</span>
+                                <div class="flex items-center gap-2">
+                                    <button id="long-break-hours-decrease" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-subtract-line text-xs"></i>
+                                    </button>
+                                    <span id="long-break-hours" class="text-lg font-bold w-6 text-center">0</span>
+                                    <button id="long-break-hours-increase" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-add-line text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Minutes</span>
+                                <div class="flex items-center gap-2">
+                                    <button id="long-break-minutes-decrease" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-subtract-line text-xs"></i>
+                                    </button>
+                                    <span id="long-break-minutes" class="text-lg font-bold w-6 text-center">15</span>
+                                    <button id="long-break-minutes-increase" class="w-6 h-6 flex items-center justify-center bg-[#3F3F46] rounded-full text-white hover:bg-primary transition-colors !rounded-button">
+                                        <i class="ri-add-line text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Fullscreen Timer Overlay -->
+    <div id="fullscreen-overlay" class="fixed inset-0 bg-[#09090B] z-50 flex items-center justify-center hidden">
+        <div class="text-center">
+            <h1 id="fullscreen-timer-display" class="timer-display text-9xl font-bold text-white mb-8">0:25</h1>
+            <p id="fullscreen-session-status" class="text-2xl text-gray-400 mb-8">Ready to start</p>
+            <button id="exit-fullscreen-btn" class="bg-[#27272A] hover:bg-[#3F3F46] text-white px-8 py-4 rounded-button text-lg">
+                Exit Fullscreen
+            </button>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast bg-[#27272A] text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
+        <div class="w-6 h-6 flex items-center justify-center bg-[#27272A] rounded-full">
+            <i class="ri-check-line"></i>
+        </div>
+        <div>
+            <h3 class="font-medium">Session Complete!</h3>
+            <p class="text-sm text-gray-400" id="toast-message">Work session completed</p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

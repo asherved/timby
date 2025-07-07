@@ -1,0 +1,348 @@
+:where([class^="ri-"])::before { content: "\f3c2"; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #09090B;
+    color: #FFFFFF;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 4 L18 12 L6 20 Z" fill="black" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>') 12 12, auto;
+}
+
+.timer-display {
+    font-family: 'Times New Roman', serif;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.slider {
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #27272A;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #000000;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #000000;
+    cursor: pointer;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-switch {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #27272A;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider-switch:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider-switch {
+    background-color: #000000;
+}
+
+input:checked + .slider-switch:before {
+    transform: translateX(24px);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.custom-select {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-select-selected {
+    cursor: pointer;
+}
+
+.custom-select-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    display: none;
+}
+
+.custom-select-items div {
+    cursor: pointer;
+}
+
+.select-show {
+    display: block;
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    transform: translateX(150%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.collapsed {
+    display: none !important;
+}
+
+.todo-item {
+    background-color: #27272A;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    gap: 12px;
+    transition: background-color 0.2s;
+}
+
+.todo-item:hover {
+    background-color: #3F3F46;
+}
+
+.todo-item.completed {
+    opacity: 0.6;
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+}
+
+.todo-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000000;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.todo-checkbox.checked {
+    background-color: #000000;
+}
+
+.todo-text {
+    flex: 1;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.todo-delete {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #9CA3AF;
+    transition: color 0.2s, background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.todo-delete:hover {
+    color: #EF4444;
+    background-color: #27272A;
+}
+
+.session-item {
+    background-color: #27272A;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    gap: 12px;
+}
+
+.session-type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.session-type-work {
+    background-color: #1E40AF;
+    color: #DBEAFE;
+}
+
+.session-type-short-break {
+    background-color: #059669;
+    color: #D1FAE5;
+}
+
+.session-type-long-break {
+    background-color: #DC2626;
+    color: #FEE2E2;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-down {
+    animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+    from { max-height: 0; opacity: 0; }
+    to { max-height: 500px; opacity: 1; }
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-in-out;
+}
+
+@keyframes slideUp {
+    from { max-height: 500px; opacity: 1; }
+    to { max-height: 0; opacity: 0; }
+}
+
+/* Custom cursor hover effects */
+button:hover, .cursor-pointer:hover {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 4 L18 12 L6 20 Z" fill="white" stroke="white" stroke-width="1" stroke-linejoin="round"/></svg>') 12 12, pointer;
+}
+
+input:hover, select:hover, textarea:hover {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 4 L18 12 L6 20 Z" fill="gray" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>') 12 12, text;
+}
+
+/* Responsive design improvements */
+@media (max-width: 640px) {
+    .container {
+        padding: 0.5rem;
+    }
+    
+    .timer-display {
+        font-size: 2.5rem !important;
+        line-height: 1;
+    }
+    
+    .bg-\\[\\#18181B\\] {
+        padding: 1rem;
+    }
+    
+    .custom-select {
+        width: 100%;
+    }
+    
+    .session-type-selected {
+        padding: 0.75rem 1rem;
+    }
+    
+    .grid.grid-cols-1.sm\\:grid-cols-2.gap-4 {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .text-2xl {
+        font-size: 1.5rem;
+    }
+    
+    .text-xl {
+        font-size: 1.25rem;
+    }
+    
+    /* Timer text responsive sizing */
+    #session-status {
+        font-size: 0.75rem !important;
+        line-height: 1.2;
+    }
+}
+
+/* Medium screens */
+@media (min-width: 641px) and (max-width: 768px) {
+    .timer-display {
+        font-size: 3.5rem !important;
+    }
+    
+    #session-status {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Large screens */
+@media (min-width: 769px) {
+    .timer-display {
+        font-size: 4rem !important;
+    }
+    
+    #session-status {
+        font-size: 1rem !important;
+    }
+}
+
+/* Hourglass logo animation */
+.hourglass-logo {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
